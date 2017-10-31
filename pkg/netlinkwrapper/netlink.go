@@ -31,7 +31,11 @@ type NetLink interface {
 	LinkAdd(link netlink.Link) error
 	// LinkSetMaster is equivalent to `ip link set $link master $master`
 	LinkSetMaster(link netlink.Link, master *netlink.Bridge) error
-	// LinkSetUp is equivalent to `ip link set $link up`
+
+        //LinkSetName sets the interface name 
+	LinkSetName(link netlink.Link, name string) error
+
+        // LinkSetUp is equivalent to `ip link set $link up`
 	LinkSetUp(link netlink.Link) error
 	// LinkList is equivalent to: `ip link show`
 	LinkList() ([]netlink.Link, error)
@@ -77,6 +81,10 @@ func (*netLink) AddrAdd(link netlink.Link, addr *netlink.Addr) error {
 
 func (*netLink) LinkSetUp(link netlink.Link) error {
 	return netlink.LinkSetUp(link)
+}
+
+func (*netLink) LinkSetName(link netlink.Link, name string) error {
+    return netlink.LinkSetName(link, name)
 }
 
 func (*netLink) LinkList() ([]netlink.Link, error) {

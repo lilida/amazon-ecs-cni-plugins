@@ -68,7 +68,7 @@ type Engine interface {
 	GetIPV6Gateway(deviceName string) (string, error)
 	DoesMACAddressMapToIPV4Address(macAddress string, ipv4Address string) (bool, error)
 	DoesMACAddressMapToIPV6Address(macAddress string, ipv4Address string) (bool, error)
-	SetupContainerNamespace(netns string, deviceName string, ipv4Address string, ipv6Address string, ipv4Gateway string, ipv6Gateway string, dhclient DHClient, blockIMDS bool) error
+	SetupContainerNamespace(netns string, deviceName string, macAddress string, ipv4Address string, ipv6Address string, ipv4Gateway string, ipv6Gateway string, dhclient DHClient, blockIMDS bool) error
 	TeardownContainerNamespace(netns string, macAddress string, stopDHClient6 bool, dhclient DHClient) error
 }
 
@@ -361,6 +361,7 @@ func (engine *engine) doesMACAddressMapToIPAddress(macAddress string, addressToF
 // ipv4-address/netmask format
 func (engine *engine) SetupContainerNamespace(netns string,
 	deviceName string,
+	macAddress string,
 	ipv4Address string,
 	ipv6Address string,
 	ipv4Gateway string,
@@ -389,7 +390,7 @@ func (engine *engine) SetupContainerNamespace(netns string,
 	}
 
 	// Generate the closure to execute within the container's namespace
-	toRun, err := newSetupNamespaceClosureContext(engine.netLink, dhclient, deviceName,
+	toRun, err := newSetupNamespaceClosureContext(engine.netLink, dhclient, deviceName, macAddress,
 		ipv4Address, ipv6Address, ipv4Gateway, ipv6Gateway, blockIMDS)
 	if err != nil {
 		return errors.Wrap(err,

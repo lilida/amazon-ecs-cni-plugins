@@ -142,8 +142,8 @@ func (client *dhclient) IsExecutableInPath() bool {
 	return true
 }
 
-func (client *dhclient) Start(deviceName string, ipRev int) error {
-	args := client.constructDHClientArgs(deviceName, ipRev)
+func (client *dhclient) Start(macAddress string, ipRev int) error {
+	args := client.constructDHClientArgs(macAddress, ipRev)
 	var out []byte
 	var err error
 	attempts := 1
@@ -174,7 +174,7 @@ func (client *dhclient) Start(deviceName string, ipRev int) error {
 
 // constructDHClientArgs constructs the arguments list for the dhclient command to
 // renew the lease on the IPV4 address
-func (client *dhclient) constructDHClientArgs(deviceName string, ipRev int) []string {
+func (client *dhclient) constructDHClientArgs(macAddress string, ipRev int) []string {
 	commonArgs := []string{
 		"-q", // Suppress all messages to terminal
 	}
@@ -185,25 +185,25 @@ func (client *dhclient) constructDHClientArgs(deviceName string, ipRev int) []st
 	}
 	return append(commonArgs,
 		"-lf",
-		client.getLeasesFile(deviceName, ipRev), // The path to the leases file
+		client.getLeasesFile(macAddress, ipRev), // The path to the leases file
 		"-pf",
-		client.getPIDFile(deviceName, ipRev), // The path to the pid file
+		client.getPIDFile(macAddress, ipRev), // The path to the pid file
 		deviceName)
 }
 
-func (client *dhclient) getPIDFile(deviceName string, ipRev int) string {
+func (client *dhclient) getPIDFile(macAddress string, ipRev int) string {
 	return fmt.Sprintf(dhclientPIDFileFormat,
 		client.pidFilePath, deviceName, ipRev)
 }
 
-func (client *dhclient) getLeasesFile(deviceName string, ipRev int) string {
+func (client *dhclient) getLeasesFile(macAddress string, ipRev int) string {
 	return fmt.Sprintf(dhclientLeasesFileFormat,
 		client.leasesFilePath, deviceName, ipRev)
 }
 
-func (client *dhclient) Stop(deviceName string, ipRev int,
+func (client *dhclient) Stop(macAddress string, ipRev int,
 	checkStateInterval time.Duration, maxWaitDuration time.Duration) error {
-	pid, err := client.getPID(deviceName, ipRev)
+	pid, err := client.getPID(macAddress, ipRev)
 	if err != nil {
 		return err
 	}
@@ -215,8 +215,8 @@ func (client *dhclient) Stop(deviceName string, ipRev int,
 		checkStateInterval, maxWaitDuration)
 }
 
-func (client *dhclient) getPID(deviceName string, ipRev int) (int, error) {
-	pidFile := client.getPIDFile(deviceName, ipRev)
+func (client *dhclient) getPID(macAddress string, ipRev int) (int, error) {
+	pidFile := client.getPIDFile(macAddress, ipRev)
 	contents, err := client.ioutil.ReadFile(pidFile)
 	if err != nil {
 		return -1, errors.Wrapf(err,
