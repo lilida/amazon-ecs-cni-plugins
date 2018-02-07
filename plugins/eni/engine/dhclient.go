@@ -39,16 +39,16 @@ const (
 	// i. Path prefix
 	// ii. Device Name
 	// iii. Internet Protocol Revision ('4' or '6')
-	dhclientLeasesFileFormat = "%s/ns-%s-dhclient%d.leases"
+	dhclientLeasesFileFormat = "%s/dhclient%d-ns-%s.leases"
 
 	dhclientPIDFilePathDefault   = "/var/run"
 	dhclientPIDFilePathEnvConfig = "ENI_DHCLIENT_PID_FILE_PATH"
 	// dhclientPIDFileFormat is the format string for the dhclient
 	// leases file for a network interface. It's composed of:
 	// i. Path prefix
-	// ii. Device Name
-	// iii. Internet Protocol Revision ('4' or '6')
-	dhclientPIDFileFormat = "%s/ns-%s-dhclient%d.pid"
+	// ii. Internet Protocol Revision ('4' or '6')
+	// iii. Device Name
+	dhclientPIDFileFormat = "%s/dhclient%d-ns-%s.pid"
 
 	ipRev4 = 4
 	ipRev6 = 6
@@ -193,12 +193,12 @@ func (client *dhclient) constructDHClientArgs(deviceName string, macAddress stri
 
 func (client *dhclient) getPIDFile(macAddress string, ipRev int) string {
 	return fmt.Sprintf(dhclientPIDFileFormat,
-		client.pidFilePath, macAddress, ipRev)
+		client.pidFilePath, ipRev, macAddress)
 }
 
 func (client *dhclient) getLeasesFile(macAddress string, ipRev int) string {
 	return fmt.Sprintf(dhclientLeasesFileFormat,
-		client.leasesFilePath, macAddress, ipRev)
+		client.leasesFilePath, ipRev, macAddress)
 }
 
 func (client *dhclient) Stop(macAddress string, ipRev int,
